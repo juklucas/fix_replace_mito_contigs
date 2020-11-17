@@ -142,7 +142,7 @@ task correctMtAssembly {
     input {
         String sampleName
         File parsedBlastOutput
-        File unzippedOrigFa
+        File inputFastaGZ
         File mitoContig
         Int mat_pat_int
 
@@ -151,6 +151,7 @@ task correctMtAssembly {
         String dockerImage = "biocontainers/samtools:v1.9-4-deb_cv1"
     }
 
+    String unzippedOrigFa    = basename(inputFastaGZ, ".gz")
     String unzippedOrigFaFai = "${unzippedOrigFa}.fai"
     String mitoContigsFn     = "${sampleName}.ParsedBlastOutput.txt"
     String nonMitoContigs    = "${sampleName}.ParsedBlastOutput.txt"
@@ -165,9 +166,10 @@ task correctMtAssembly {
         set -u
         set -o xtrace
 
-        ## Index original assembly (copy locally so index and file are in same directory)
-        cp ~{unzippedOrigFa} .
-        samtools faidx `basename ~{unzippedOrigFa}`
+        ## gunzip input fasta 
+        gunzip -c ~{inputFastaGZ} > ~{unzippedOrigFa}
+
+        samtools faidx ~{unzippedOrigFa}
 
         ## Pull mito contigs names, then filter out of all contig names to create nonMitoContigs
         cat ~{parsedBlastOutput} | cut -f1 | sed '1d'  > ~{mitoContigsFn}
