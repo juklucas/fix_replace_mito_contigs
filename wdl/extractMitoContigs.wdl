@@ -182,11 +182,11 @@ task correctMtAssembly {
         sed 's/^>/>~{sampleName}#~{mat_pat_int}/' ~{nonMitoAssembly} > ~{renameNonMitoAss}
 
         ## Now add in the MT assembly from Heng (for maternal assemblies), and zip up the file
-        if [ `~{mat_pat_int} == 2` ]
+        if [[ `~{mat_pat_int} == 2` ]]
         then
-            cat ~{renameNonMitoAss} ~{mitoContig} | bgzip -c > ~{FinalAssembly}
+            cat ~{renameNonMitoAss} ~{mitoContig} | gzip > ~{FinalAssembly}
         else
-            cat ~{renameNonMitoAss} | bgzip -c > ~{FinalAssembly}
+            cat ~{renameNonMitoAss} | gzip > ~{FinalAssembly}
         fi
 
     >>>
