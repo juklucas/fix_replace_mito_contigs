@@ -166,7 +166,8 @@ task correctMtAssembly {
         set -o xtrace
 
         ## Index original assembly
-        samtools faidx ~{unzippedOrigFa}
+        ln -s ~{unzippedOrigFa}
+        samtools faidx `basename ~{unzippedOrigFa}`
 
         ## Pull mito contigs names, then filter out of all contig names to create nonMitoContigs
         cat ~{parsedBlastOutput} | cut -f1 | sed '1d'  > ~{mitoContigsFn}
