@@ -104,7 +104,7 @@ task parseBlastOutput {
     input {
         String sampleName
         File blastOutput
-        String parse_script
+        File parse_script
         String parsedBlastOutputName = "${sampleName}.ParsedBlastOutput.txt"
 
         Int memSizeGB = 4
