@@ -148,7 +148,7 @@ task correctMtAssembly {
 
         Int memSizeGB = 4
         Int diskSizeGB = 64
-        String dockerImage = "biocontainers/samtools:latest"
+        String dockerImage = "biocontainers/samtools:v1.9-4-deb_cv1"
     }
 
     String unzippedOrigFaFai = "${unzippedOrigFa}.fai"
@@ -178,9 +178,14 @@ task correctMtAssembly {
         ## Rename contig names to sampleName#1/2#contigName format (1 = paternal, 2 = maternal)
         sed 's/^>/>~{sampleName}#~{mat_pat_int}/' ~{nonMitoAssembly} > ~{renameNonMitoAss}
 
-        ## Now add in the MT assembly from Heng, and zip up the file
-        cat ~{renameNonMitoAss} ~{mitoContig} | bgzip -c > ~{FinalAssembly}
-        
+        ## Now add in the MT assembly from Heng (for maternal assemblies), and zip up the file
+        if [~{mat_pat_int} == 2]
+        then
+            cat ~{renameNonMitoAss} ~{mitoContig} | bgzip -c > ~{FinalAssembly}
+        else
+            cat ~{renameNonMitoAss} | bgzip -c > ~{FinalAssembly}
+        fi
+
     >>>
 
     output {
