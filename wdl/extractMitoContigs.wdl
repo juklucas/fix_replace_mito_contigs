@@ -120,7 +120,9 @@ task parseBlastOutput {
         set -o xtrace
 
 
-        ## gunzip input fasta 
+        ## parse blast output (aggregate blast hits into contig-level summary; 
+        ## only outputs MT-only contigs). Slightly modified version of parse_blast.py 
+        ## script found in MitoHiFi (https://github.com/marcelauliano/MitoHiFi)
         python ~{parse_script} ~{blastOutput} ~{parsedBlastOutputName}
         
     >>>
@@ -179,7 +181,7 @@ task correctMtAssembly {
         samtools faidx ~{unzippedOrigFa} `cat ~{nonMitoContigs}` > ~{nonMitoAssembly}
 
         ## Rename contig names to sampleName#1/2#contigName format (1 = paternal, 2 = maternal)
-        sed 's/^>/>~{sampleName}#~{mat_pat_int}#/' ~{nonMitoAssembly} > ~{renameNonMitoAss}
+        sed 's/^>/>${sampleName}#${mat_pat_int}#/' ~{nonMitoAssembly} > ~{renameNonMitoAss}
 
         ## Now add in the MT assembly from Heng (for maternal assemblies), and zip up the file
         if [[ $mat_pat_int == 2 ]]
