@@ -5,22 +5,25 @@ workflow extractMitoContigs {
     input {
         File chrM_fa
         String sampleName
+        String parent
+        Int mat_pat_int
         File inputFastaGZ
         File parse_script
         File mitoAssembly
-        Int mat_pat_int
     }
     
     call blastFasta {
         input:
             chrM_fa=chrM_fa,
             sampleName=sampleName,
+            parent=parent,
             inputFastaGZ=inputFastaGZ,
     }
 
     call parseBlastOutput {
         input:
             sampleName=sampleName,
+            parent=parent,
             blastOutput=blastFasta.blastOutput,
             parse_script=parse_script
     }
@@ -28,6 +31,7 @@ workflow extractMitoContigs {
     call correctMtAssembly {
         input:
             sampleName=sampleName,
+            parent=parent,
             parsedBlastOutput=parseBlastOutput.parsedBlastOutput,
             inputFastaGZ=inputFastaGZ,
             mitoAssembly=mitoAssembly,
@@ -49,8 +53,9 @@ task blastFasta {
     input {
         File chrM_fa
         String sampleName
+        String parent
         File inputFastaGZ
-        String blastOutputName = "${sampleName}.BlastOutput.txt"
+        String blastOutputName = "${sampleName}.${parent}.BlastOutput.txt"
 
         Int memSizeGB = 4
         Int diskSizeGB = 64
@@ -106,7 +111,7 @@ task parseBlastOutput {
         String sampleName
         File blastOutput
         File parse_script
-        String parsedBlastOutputName = "${sampleName}.ParsedBlastOutput.txt"
+        String parsedBlastOutputName = "${sampleName}.${parent}.ParsedBlastOutput.txt"
 
         Int memSizeGB = 4
         Int diskSizeGB = 64
@@ -156,11 +161,11 @@ task correctMtAssembly {
 
     String unzippedOrigFa    = basename(inputFastaGZ, ".gz")
     String unzippedOrigFaFai = "${unzippedOrigFa}.fai"
-    String mitoContigsFn     = "${sampleName}.mitoContigList.txt"
-    String nonMitoContigs    = "${sampleName}.nonMitoContigList.txt"
-    String nonMitoAssembly   = "${sampleName}.noMito.fa"
-    String renameNonMitoAss  = "${sampleName}.noMito.renamed.fa"
-    String FinalAssembly     = "${sampleName}.fa.gz"
+    String mitoContigsFn     = "${sampleName}.${parent}.mitoContigList.txt"
+    String nonMitoContigs    = "${sampleName}.${parent}.nonMitoContigList.txt"
+    String nonMitoAssembly   = "${sampleName}.${parent}.noMito.fa"
+    String renameNonMitoAss  = "${sampleName}.${parent}.noMito.renamed.fa"
+    String FinalAssembly     = "${sampleName}.${parent}.fa.gz"
 
     command <<<
 
