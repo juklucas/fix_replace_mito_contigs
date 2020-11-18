@@ -55,14 +55,14 @@ task blastFasta {
         String sampleName
         String parent
         File inputFastaGZ
-        String blastOutputName = "${sampleName}.${parent}.BlastOutput.txt"
-
+        
         Int memSizeGB = 4
         Int diskSizeGB = 64
         String dockerImage = "ncbi/blast:latest"
     }
 
     String inputFasta = basename(inputFastaGZ, ".gz")
+    String blastOutputName = "${sampleName}.${parent}.BlastOutput.txt"
 
     command <<<
 
@@ -112,12 +112,13 @@ task parseBlastOutput {
         String parent
         File blastOutput
         File parse_script
-        String parsedBlastOutputName = "${sampleName}.${parent}.ParsedBlastOutput.txt"
 
         Int memSizeGB = 4
         Int diskSizeGB = 64
         String dockerImage = "amancevice/pandas:latest"
     }
+
+    String parsedBlastOutputName = "${sampleName}.${parent}.ParsedBlastOutput.txt"
 
     command <<<
 
