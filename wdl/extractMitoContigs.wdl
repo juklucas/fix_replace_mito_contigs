@@ -7,7 +7,7 @@ workflow extractMitoContigs {
         String sampleName
         File inputFastaGZ
         File parse_script
-        File mitoContig
+        File mitoAssembly
         Int mat_pat_int
     }
     
