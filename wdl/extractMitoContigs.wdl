@@ -157,7 +157,7 @@ task correctMtAssembly {
     String nonMitoContigs    = "${sampleName}.ParsedBlastOutput.txt"
     String nonMitoAssembly   = "${sampleName}.noMito.fa"
     String renameNonMitoAss  = "${sampleName}.noMito.renamed.fa"
-    String FinalAssembly     = "${sampleName}.fa"
+    String FinalAssembly     = "${sampleName}.fa.gz"
 
     command <<<
 
@@ -179,14 +179,14 @@ task correctMtAssembly {
         samtools faidx ~{unzippedOrigFa} `cat ~{nonMitoContigs}` > ~{nonMitoAssembly}
 
         ## Rename contig names to sampleName#1/2#contigName format (1 = paternal, 2 = maternal)
-        sed 's/^>/>~{sampleName}#~{mat_pat_int}/' ~{nonMitoAssembly} > ~{renameNonMitoAss}
+        sed 's/^>/>~{sampleName}#~{mat_pat_int}#/' ~{nonMitoAssembly} > ~{renameNonMitoAss}
 
         ## Now add in the MT assembly from Heng (for maternal assemblies), and zip up the file
-        if [[ `~{mat_pat_int} == 2` ]]
+        if [[ $mat_pat_int == 2 ]]
         then
-            cat ~{renameNonMitoAss} ~{mitoContig} | gzip > ~{FinalAssembly}
+            cat ~{renameNonMitoAss} ~{mitoContig} | bgzip > ~{FinalAssembly}
         else
-            cat ~{renameNonMitoAss} | gzip > ~{FinalAssembly}
+            cat ~{renameNonMitoAss} | bgzip > ~{FinalAssembly}
         fi
 
     >>>
