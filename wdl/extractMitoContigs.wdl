@@ -30,7 +30,7 @@ workflow extractMitoContigs {
             sampleName=sampleName,
             parsedBlastOutput=parseBlastOutput.parsedBlastOutput,
             inputFastaGZ=inputFastaGZ,
-            mitoContig=mitoContig,
+            mitoAssembly=mitoAssembly,
             mat_pat_int=mat_pat_int
     }
 
