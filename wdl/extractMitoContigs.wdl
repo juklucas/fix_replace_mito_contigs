@@ -38,6 +38,7 @@ workflow extractMitoContigs {
         File blastOutput       = blastFasta.blastOutput
         File parsedBlastOutput = parseBlastOutput.parsedBlastOutput
         File mitoContigsFn     = correctMtAssembly.mitoContigsFn
+        File nonMitoContigs    = correctMtAssembly.nonMitoContigs
         File FinalAssembly     = correctMtAssembly.FinalAssembly
     }
 }
@@ -145,7 +146,7 @@ task correctMtAssembly {
         String sampleName
         File parsedBlastOutput
         File inputFastaGZ
-        File mitoContig
+        File mitoAssembly
         Int mat_pat_int
 
         Int memSizeGB = 4
@@ -155,8 +156,8 @@ task correctMtAssembly {
 
     String unzippedOrigFa    = basename(inputFastaGZ, ".gz")
     String unzippedOrigFaFai = "${unzippedOrigFa}.fai"
-    String mitoContigsFn     = "${sampleName}.ParsedBlastOutput.txt"
-    String nonMitoContigs    = "${sampleName}.ParsedBlastOutput.txt"
+    String mitoContigsFn     = "${sampleName}.mitoContigList.txt"
+    String nonMitoContigs    = "${sampleName}.nonMitoContigList.txt"
     String nonMitoAssembly   = "${sampleName}.noMito.fa"
     String renameNonMitoAss  = "${sampleName}.noMito.renamed.fa"
     String FinalAssembly     = "${sampleName}.fa.gz"
@@ -186,16 +187,17 @@ task correctMtAssembly {
         ## Now add in the MT assembly from Heng (for maternal assemblies), and zip up the file
         if [[ ~{mat_pat_int} == 2 ]]
         then
-            cat ~{renameNonMitoAss} ~{mitoContig} | bgzip > ~{FinalAssembly}
+            cat ~{renameNonMitoAss} ~{mitoAssembly} | gzip > ~{FinalAssembly}
         else
-            cat ~{renameNonMitoAss} | bgzip > ~{FinalAssembly}
+            cat ~{renameNonMitoAss} | gzip > ~{FinalAssembly}
         fi
 
     >>>
 
     output {
-        File mitoContigsFn = mitoContigsFn
-        File FinalAssembly = FinalAssembly
+        File mitoContigsFn  = mitoContigsFn
+        File nonMitoContigs = nonMitoContigs
+        File FinalAssembly  = FinalAssembly
     }
 
     runtime {
