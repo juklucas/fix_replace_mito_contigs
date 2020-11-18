@@ -109,6 +109,7 @@ task parseBlastOutput {
 
     input {
         String sampleName
+        String parent
         File blastOutput
         File parse_script
         String parsedBlastOutputName = "${sampleName}.${parent}.ParsedBlastOutput.txt"
@@ -124,7 +125,6 @@ task parseBlastOutput {
         set -e
         set -u
         set -o xtrace
-
 
         ## parse blast output (aggregate blast hits into contig-level summary; 
         ## only outputs MT-only contigs). Slightly modified version of parse_blast.py 
@@ -149,10 +149,11 @@ task correctMtAssembly {
 
     input {
         String sampleName
+        String parent
+        Int mat_pat_int
         File parsedBlastOutput
         File inputFastaGZ
         File mitoAssembly
-        Int mat_pat_int
 
         Int memSizeGB = 4
         Int diskSizeGB = 64
