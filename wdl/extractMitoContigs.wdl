@@ -181,10 +181,10 @@ task correctMtAssembly {
         samtools faidx ~{unzippedOrigFa} `cat ~{nonMitoContigs}` > ~{nonMitoAssembly}
 
         ## Rename contig names to sampleName#1/2#contigName format (1 = paternal, 2 = maternal)
-        sed 's/^>/>${sampleName}#${mat_pat_int}#/' ~{nonMitoAssembly} > ~{renameNonMitoAss}
+        sed "s/^>/>${sampleName}\#${mat_pat_int}\#/" ~{nonMitoAssembly} > ~{renameNonMitoAss}
 
         ## Now add in the MT assembly from Heng (for maternal assemblies), and zip up the file
-        if [[ $mat_pat_int == 2 ]]
+        if [[ ~{mat_pat_int} == 2 ]]
         then
             cat ~{renameNonMitoAss} ~{mitoContig} | bgzip > ~{FinalAssembly}
         else
